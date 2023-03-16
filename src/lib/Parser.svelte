@@ -1,11 +1,11 @@
 <script>
-  import Papa from 'papaparse'
+  import Papa from "papaparse"
 
-  let upload
+  let uploader
   let downloadUrl
 
   const parse = () => {
-    const file = upload.files[0]
+    const file = uploader.files[0]
 
     Papa.parse(file, {
       skipEmptyLines: true,
@@ -22,7 +22,7 @@
 
 <div>
   <div>
-    <input bind:this={upload} type="file" />
+    <input bind:this={uploader} type="file" />
     <button on:click={parse}>Parse</button>
   </div>
 
