@@ -2,14 +2,19 @@
   import Papa from 'papaparse'
 
   let upload
-  let output = ''
+  let downloadUrl
 
   const parse = () => {
     const file = upload.files[0]
 
     Papa.parse(file, {
-      complete: function(results) {
-        output = JSON.stringify(results.data)
+      skipEmptyLines: true,
+      complete: (results) => {
+        console.log(results.data)
+
+        const csv = Papa.unparse(results.data)
+        const file = new Blob([csv], {type: "text/csv"})
+        downloadUrl = URL.createObjectURL(file)
       }
     })
   }
@@ -21,5 +26,7 @@
     <button on:click={parse}>Parse</button>
   </div>
 
-  <textarea>{output}</textarea>
+  {#if downloadUrl}
+    <a href={downloadUrl} download="download.csv">Download</a>
+  {/if}
 </div>
