@@ -1,6 +1,17 @@
 <script>
   import Papa from "papaparse"
 
+  import initSqlJs from "sql.js"
+  import sqlJsWasm from "../../node_modules/sql.js/dist/sql-wasm.wasm?url"
+
+  initSqlJs({
+    locateFile: file => sqlJsWasm
+  }).then(SQL => {
+    const db = new SQL.Database()
+
+    console.log(db.exec("SELECT 1 + 1;")[0].values[0][0])
+  })
+
   let uploader
   let downloadUrl
 
