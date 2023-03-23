@@ -1,6 +1,16 @@
 <script>
   import icon from '/icon.svg'
   import Parser from './lib/Parser.svelte'
+  import Downloader from './lib/Downloader.svelte'
+  import Database from './lib/Database.svelte'
+
+  let rows
+
+  const store = data => {
+    console.log(data)
+
+    rows = data
+  }
 </script>
 
 <main>
@@ -8,7 +18,11 @@
   <h1>CSV Parser</h1>
 
   <div class="card">
-    <Parser />
+    <Parser {store} />
+    <Database />
+    {#if rows}
+      <Downloader {rows} />
+    {/if}
   </div>
 </main>
 
