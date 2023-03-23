@@ -1,15 +1,27 @@
 <script>
+  import Papa from "papaparse"
+
   import icon from '/icon.svg'
-  import Parser from './lib/Parser.svelte'
+
+  import Uploader from './lib/Uploader.svelte'
   import Downloader from './lib/Downloader.svelte'
+
   import Database from './lib/Database.svelte'
 
   let rows
+  let csv
 
-  const store = data => {
-    console.log(data)
+  const store = file => {
+    Papa.parse(file, {
+      skipEmptyLines: true,
+      complete: results => {
+        rows = results.data
+      }
+    })
+  }
 
-    rows = data
+  const generate = () => {
+    csv = Papa.unparse(rows)
   }
 </script>
 
@@ -17,11 +29,15 @@
   <img src={icon} class="logo" alt="Logo" />
   <h1>CSV Parser</h1>
 
+  <Database />
+
   <div class="card">
-    <Parser {store} />
-    <Database />
+    <Uploader {store} />
     {#if rows}
-      <Downloader {rows} />
+      <button on:click={generate}>Generate</button>
+    {/if}
+    {#if csv}
+      <Downloader {csv} />
     {/if}
   </div>
 </main>
