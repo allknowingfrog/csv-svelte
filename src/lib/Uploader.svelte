@@ -9,6 +9,6 @@
 <div>
   <div>
     <input bind:this={uploader} type="file" />
-    <button on:click={upload}>Upload</button>
+    <button on:click={upload}>Process</button>
   </div>
 </div>
