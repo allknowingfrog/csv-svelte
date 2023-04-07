@@ -23,10 +23,12 @@
     return childId && logDate && hours ? [name, logDate, hours] : null
   }
 
+  const database = initSqlJs({
+    locateFile: file => sqlJsWasm
+  })
+
   const load = rows => {
-    initSqlJs({
-      locateFile: file => sqlJsWasm
-    }).then(SQL => {
+    database.then(SQL => {
       const db = new SQL.Database()
 
       db.run("CREATE TABLE logs (name INTEGER, log_date TEXT, hours REAL);")
