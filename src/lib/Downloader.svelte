@@ -7,5 +7,5 @@
 </script>
 
 <div>
-  <a href={downloadUrl} download="download.csv">Download</a>
+  <a href={downloadUrl} download="attendance.csv">Download</a>
 </div>

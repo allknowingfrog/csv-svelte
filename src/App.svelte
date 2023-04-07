@@ -75,7 +75,7 @@
 
 <main>
   <img src={icon} class="logo" alt="Logo" />
-  <h1>CSV Parser</h1>
+  <h1>Attendance Calculator</h1>
 
   <div class="card">
     <Uploader {store} />
