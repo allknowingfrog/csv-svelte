@@ -15,12 +15,13 @@
     const childId = parseInt(row[1])
     const firstName = row[3]
     const lastName = row[4]
+    const classroom = row[6]
     const logDate = row[7]
     const hours = parseFloat(row[13])
 
     const name = lastName + ", " + firstName
 
-    return childId && logDate && hours ? [name, logDate, hours] : null
+    return childId && logDate && hours ? [classroom, name, logDate, hours] : null
   }
 
   const database = initSqlJs({
@@ -31,9 +32,9 @@
     database.then(SQL => {
       const db = new SQL.Database()
 
-      db.run("CREATE TABLE logs (name INTEGER, log_date TEXT, hours REAL);")
+      db.run("CREATE TABLE logs (classroom TEXT, name TEXT, log_date TEXT, hours REAL);")
 
-      const stmt = db.prepare("INSERT INTO logs VALUES (?, ?, ?);")
+      const stmt = db.prepare("INSERT INTO logs VALUES (?, ?, ?, ?);")
 
       let values
 
@@ -46,22 +47,32 @@
       })
 
       const result = db.exec(`
-        SELECT name, SUM(days) AS days, SUM(low_hours + high_hours) AS hours
+        SELECT
+          name,
+          COUNT(log_date) as days,
+          SUM(days) AS fulls,
+          SUM(partial_under + partial_over) AS partials
         FROM (
-          SELECT name, log_date,
-            IIF(hours >= 6, 1, 0) AS days,
-            IIF(hours < 6, CEIL(hours * 4) / 4.0, 0) AS low_hours,
-            IIF(hours > 10, CEIL((hours - 10) * 4) / 4.0, 0) AS high_hours
+          SELECT
+            name,
+            log_date,
+            IIF(hours > 5.75, 1, 0) AS days,
+            IIF(hours <= 5.75, 1, 0) AS partial_under,
+            IIF(hours > 10, 1, 0) AS partial_over
           FROM (
-            SELECT name, log_date, SUM(hours) hours
-            FROM logs GROUP BY name, log_date
+            SELECT
+              name,
+              log_date,
+              IIF(classroom LIKE '%School Age%' AND COUNT(log_date) > 1, 8, SUM(hours)) hours
+            FROM logs
+            GROUP BY classroom, name, log_date
           )
         ) GROUP BY name;
       `)
 
       let data = result[0].values
 
-      data.unshift(["Child", "Days", "Hours"])
+      data.unshift(["Child", "Attended Days", "Full Days", "Partial Days"])
 
       csv = Papa.unparse(data)
     })
